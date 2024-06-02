@@ -5,6 +5,16 @@ public class Libro {
     private String genero;
     private int copiasDisponibles;
     
+    // Constructor
+    public Libro(int id, String titulo, String autor, String genero, int copiasDisponibles) {
+        this.id = id;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.genero = genero;
+        this.copiasDisponibles = copiasDisponibles;
+    }
+    
+    // Getters y Setters
     public int getId() {
         return id;
     }

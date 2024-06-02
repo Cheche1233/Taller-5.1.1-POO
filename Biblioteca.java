@@ -1,77 +1,46 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
 
 public class Biblioteca {
-    private List<Libro> libros;
-    private List<Usuario> usuarios;
-    private List<Prestamo> prestamos;
+    private static final String ARCHIVO_LIBROS = "libros.txt";
 
-    public Biblioteca() {
-        this.libros = new ArrayList<>();
-        this.usuarios = new ArrayList<>();
-        this.prestamos = new ArrayList<>();
-    }
-
-    public List<Libro> getLibros() {
-        return libros;
-    }
-
-    public List<Usuario> getUsuarios() {
-        return usuarios;
-    }
-
-    public List<Prestamo> getPrestamos() {
-        return prestamos;
-    }
-
-    public void agregarLibro(Libro libro) {
-        libros.add(libro);
-    }
-
-    public void eliminarLibro(Libro libro) {
-        libros.remove(libro);
-    }
-
-    public Libro buscarLibro(int id) {
-        for (Libro libro : libros) {
-            if (libro.getId() == id) {
-                return libro;
+    public void guardarLibros(Libro[] libros) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(ARCHIVO_LIBROS))) {
+            for (Libro libro : libros) {
+                writer.println(libro.getId() + "," + libro.getTitulo() + "," + libro.getAutor() + "," +
+                        libro.getGenero() + "," + libro.getCopiasDisponibles());
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
     }
 
-    public void agregarUsuario(Usuario usuario) {
-        usuarios.add(usuario);
-    }
-
-    public void eliminarUsuario(Usuario usuario) {
-        usuarios.remove(usuario);
-    }
-
-    public Usuario buscarUsuario(int id) {
-        for (Usuario usuario : usuarios) {
-            if (usuario.getId() == id) {
-                return usuario;
+    public Libro[] cargarLibros() {
+        Libro[] libros = null; // Inicializar el arreglo fuera del bloque try-with-resources
+        try (BufferedReader reader = new BufferedReader(new FileReader(ARCHIVO_LIBROS))) {
+            String linea;
+            int contador = 0;
+            while ((linea = reader.readLine()) != null) {
+                contador++;
             }
+            libros = new Libro[contador];
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null; // Retornar null si ocurre un error al abrir el archivo
         }
-        return null;
-    }
 
-    public void realizarPrestamo(Usuario usuario, Libro libro) {
-        Prestamo prestamo = new Prestamo();
-        prestamo.setUsuario(usuario);
-        prestamo.setLibro(libro);
-        prestamos.add(prestamo);
-
-        if (usuario.getLibrosPrestados() == null) {
-            usuario.setLibrosPrestados(new ArrayList<>()); // Inicializar la lista si es null
+        try (BufferedReader reader = new BufferedReader(new FileReader(ARCHIVO_LIBROS))) {
+            String linea;
+            int contador = 0;
+            while ((linea = reader.readLine()) != null) {
+                String[] partes = linea.split(",");
+                libros[contador] = new Libro(Integer.parseInt(partes[0]), partes[1], partes[2], partes[3],
+                        Integer.parseInt(partes[4]));
+                contador++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        usuario.getLibrosPrestados().add(libro); // Agregar el libro a los libros prestados del usuario
-        libro.setCopiasDisponibles(libro.getCopiasDisponibles() - 1); // Reducir la cantidad de copias disponibles del libro
-    }
 
-    public void devolverLibro(Prestamo prestamo) {
-        prestamo.setDevuelto(true);
+        return libros; // Retornar el arreglo de libros
     }
 }
