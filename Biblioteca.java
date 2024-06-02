@@ -5,11 +5,23 @@ public class Biblioteca {
     private List<Libro> libros;
     private List<Usuario> usuarios;
     private List<Prestamo> prestamos;
-    
+
     public Biblioteca() {
         this.libros = new ArrayList<>();
         this.usuarios = new ArrayList<>();
         this.prestamos = new ArrayList<>();
+    }
+
+    public List<Libro> getLibros() {
+        return libros;
+    }
+
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
+
+    public List<Prestamo> getPrestamos() {
+        return prestamos;
     }
 
     public void agregarLibro(Libro libro) {
@@ -51,6 +63,12 @@ public class Biblioteca {
         prestamo.setUsuario(usuario);
         prestamo.setLibro(libro);
         prestamos.add(prestamo);
+
+        if (usuario.getLibrosPrestados() == null) {
+            usuario.setLibrosPrestados(new ArrayList<>()); // Inicializar la lista si es null
+        }
+        usuario.getLibrosPrestados().add(libro); // Agregar el libro a los libros prestados del usuario
+        libro.setCopiasDisponibles(libro.getCopiasDisponibles() - 1); // Reducir la cantidad de copias disponibles del libro
     }
 
     public void devolverLibro(Prestamo prestamo) {
